@@ -12,7 +12,7 @@ import static com.codeborne.selenide.Selenide.*;
 public class DashBoardPage {
 
     private final SelenideElement deposit1 = $$("button").get(1);
-    private final SelenideElement deposit2 = $$("[data-test-id=action-deposit] [role=button]").get(2);
+    private final SelenideElement deposit2 = $("[data-test-id=0f3f5c2a-249e-4c3d-8287-09f7a039391d] [role=button]");
     private final SelenideElement sum = $("[data-test-id=amount] .input__control");
     private final SelenideElement from = $("[data-test-id=from] .input__control");
     private final SelenideElement action = $("[data-test-id=action-transfer]");
@@ -33,7 +33,6 @@ public class DashBoardPage {
     }
 
     public DashBoardPage validDeposit2 (DataHelper.CardInfo cardInfo) throws InterruptedException {
-        deposit2.hover();
         deposit2.click();
         Thread.sleep(5);
         sum.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
