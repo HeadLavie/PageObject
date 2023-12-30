@@ -4,6 +4,9 @@ import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataHelper;
+import ru.netology.page.DashBoardPage;
+import ru.netology.page.LoginPageV1;
+import ru.netology.page.VerificationPage;
 
 import java.time.Duration;
 
@@ -19,12 +22,35 @@ public class MoneyTransferTest {
     }
 
     @Test
-    void ShouldTransferMoneyBetweenCardsV1() {
+    void ShouldTransferMoneyBetweenCardsV1() throws InterruptedException {
         var authInfo = DataHelper.getAuthInfo();
-        $("[data-test-id=login] input").setValue(authInfo.getLogin());
-        $("[data-test-id=password] input").setValue(authInfo.getPassword());
-        $("[data-test-id=action-login]").click();
-        $("[data-test-id=code]").shouldBe(Condition.visible);
+        var cardInfo = DataHelper.getCardInfo();
+        var validCode = DataHelper.getVerificationCode();
+
+        LoginPageV1 login = new LoginPageV1();
+        login.validLogin(authInfo);
+
+        VerificationPage verification = new VerificationPage();
+        verification.validCode(validCode);
+
+        DashBoardPage dashboard = new DashBoardPage();
+        dashboard.validDeposit(cardInfo);
+    }
+
+    @Test
+    void ShouldTransferMoneyBetweenCardsV2() throws InterruptedException {
+        var authInfo = DataHelper.getAuthInfo();
+        var cardInfo = DataHelper.getCardInfo();
+        var validCode = DataHelper.getVerificationCode();
+
+        LoginPageV1 login = new LoginPageV1();
+        login.validLogin(authInfo);
+
+        VerificationPage verification = new VerificationPage();
+        verification.validCode(validCode);
+
+        DashBoardPage dashboard = new DashBoardPage();
+        dashboard.validDeposit2(cardInfo);
     }
 }
 
