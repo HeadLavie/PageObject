@@ -1,6 +1,7 @@
 package ru.netology.page;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.Keys;
 import ru.netology.data.DataHelper;
@@ -11,35 +12,42 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class DashBoardPage {
 
-    private final SelenideElement deposit1 = $$("button").get(1);
-    private final SelenideElement deposit2 = $("[data-test-id=0f3f5c2a-249e-4c3d-8287-09f7a039391d] [role=button]");
-    private final SelenideElement sum = $("[data-test-id=amount] .input__control");
-    private final SelenideElement from = $("[data-test-id=from] .input__control");
-    private final SelenideElement action = $("[data-test-id=action-transfer]");
+    private final String balanceStart = "баланс: ";
+    private final String balanceFinish = " .р";
+    private final ElementsCollection cards = $$(".list__item div");
+    private final SelenideElement heading = $("[data-test-id=dashboard]");
 
     public DashBoardPage() {
-        deposit1.shouldBe(Condition.visible);
+        heading.shouldBe(Condition.visible);
     }
 
-    public DashBoardPage validDeposit (DataHelper.CardInfo cardInfo) throws InterruptedException {
-        deposit1.click();
-        Thread.sleep(5);
-        sum.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        sum.setValue(String.valueOf(cardInfo.getSum()));
-        from.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        from.setValue(String.valueOf(cardInfo.getNumber()));
-        action.click();
-        return new DashBoardPage();
+    public int getCardBalance(DataHelper.CardInfo cardInfo) {
+        var text = cards.findBy(Condition.text(cardInfo.getNumber().substring(15))).getText();
+        return extractBalance(text);
     }
 
-    public DashBoardPage validDeposit2 (DataHelper.CardInfo cardInfo) throws InterruptedException {
-        deposit2.click();
-        Thread.sleep(5);
-        sum.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        sum.setValue(String.valueOf(cardInfo.getSum()));
-        from.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        from.setValue(String.valueOf(cardInfo.getNumber()));
-        action.click();
-        return new DashBoardPage();
+    /*
+        public int getFirstCardBalance() {
+            var text = cards.first().text();
+            return extractBalance(text);
+        }
+
+            public int getFirstCardBalance(int index) {
+            var text = cards.get(index).text();
+            return extractBalance(text);
+        }
+    */
+    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
+
+        cards.findBy(Condition.attribute("data-test-id", cardInfo.getId())).$("button").click();
+        return new TransferPage();
+    }
+
+
+    private int extractBalance(String text) {
+        var start = text.indexOf(balanceStart);
+        var finish = text.indexOf(balanceFinish);
+        var value = text.substring(start + balanceStart.length(), finish);
+        return Integer.parseInt(value);
     }
 }
